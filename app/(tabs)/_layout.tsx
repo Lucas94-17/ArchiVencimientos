@@ -1,35 +1,45 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import * as Notifications from "expo-notifications";
+import { Stack } from "expo-router";
+import { useEffect } from "react";
+import { Platform } from "react-native";
+import { registerUserIfNeeded } from "../../src/services/api/user.api";
+import { initNotifications } from "../../src/services/notifications/notifications";
+import { registerForPush } from "../_layout";
+export default function TabsLayout() {
+  useEffect(() => {
+    (async () => {
+      // 1️⃣ Registrar usuario anónimo (deviceId)
+      await registerUserIfNeeded();
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+      // 2️⃣ Canal Android1
+      if (Platform.OS === "android") {
+        await Notifications.setNotificationChannelAsync("default", {
+          name: "Default",
+          importance: Notifications.AndroidImportance.MAX,
+          sound: "default",
+        });
+      }
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+      // 3️⃣ Init notificaciones locales
+      initNotifications();
+
+      // 4️⃣ Registrar push (obtiene token internamente)
+      const token = await registerForPush();
+
+      // 5️⃣ Si hay token, asociarlo al user
+      if (token) {
+        await registerUserIfNeeded();
+        // mismo endpoint, ahora con expoPushToken guardado
+      }
+    })();
+  }, []);
 
   return (
-    <Tabs
+    <Stack
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
+        headerStyle: { backgroundColor: "#111827" },
+        headerTintColor: "#fff",
+      }}
+    />
   );
 }

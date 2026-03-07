@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "vencimientos-mvp",
-    "slug": "vencimientos-mvp",
+    "name": "ArchiVencimientos",
+    "slug": "archi-vencimientos",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,7 +19,9 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.archi.vencimientos",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -27,6 +29,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-notifications",
       [
         "expo-splash-screen",
         {
@@ -38,11 +41,29 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-sqlite",
+      "@react-native-community/datetimepicker"
     ],
+    "notification": {
+      "color": "#111827"
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5b58ec94-aad0-4b2b-b462-851dcd5441a1"
+      }
+    },
+    "owner": "lucasarteaga17s-organization",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5b58ec94-aad0-4b2b-b462-851dcd5441a1"
     }
   }
 }
