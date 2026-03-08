@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "930688855824",
+    "project_id": "archivencimientos",
+    "storage_bucket": "archivencimientos.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930688855824:android:56b0f1efab8dca1b8fff95",
+        "android_client_info": {
+          "package_name": "com.archi.vencimientos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxir3x0fmYtNebh-cquFv4_2LEQzk8SSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
