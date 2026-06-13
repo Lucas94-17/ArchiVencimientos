@@ -1,25 +1,25 @@
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-  Alert,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
+    Alert,
+    FlatList,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 
 import {
-  humanDateLabel,
-  parseLocalDateTime,
-  urgencyColorByExpiry,
+    humanDateLabel,
+    parseLocalDateTime,
+    urgencyColorByExpiry,
 } from "../../src/services/libs/utils";
 
 import {
-  Product,
-  deleteProduct,
-  listProducts,
-  updateProductQuantity,
+    Product,
+    deleteProduct,
+    listProducts,
+    updateProductQuantity,
 } from "../../src/services/api/products.api";
 export function parseLocalDate(yyyyMmDd: string) {
   const [y, m, d] = yyyyMmDd.split("-").map(Number);
