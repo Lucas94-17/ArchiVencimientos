@@ -1,26 +1,27 @@
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-    Alert,
-    FlatList,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Alert,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 import {
-    humanDateLabel,
-    parseLocalDateTime,
-    urgencyColorByExpiry,
-} from "../../src/services/libs/utils";
-
-import {
-    Product,
-    deleteProduct,
-    listProducts,
-    updateProductQuantity,
+  deleteProduct,
+  listProductsLowLogic,
+  updateProductQuantity,
 } from "../../src/services/api/products.api";
+import {
+  humanDateLabel,
+  parseLocalDateTime,
+  urgencyColorByExpiry,
+} from "../../src/services/libs/utils";
+import { Product } from "../../src/types/product";
+// import { Archived } from "../(tabs)/archived";
+import { ProductRow } from "../../src/components/ProductRow";
 export function parseLocalDate(yyyyMmDd: string) {
   const [y, m, d] = yyyyMmDd.split("-").map(Number);
   // mediodía local para evitar corrimientos por zona horaria
@@ -34,7 +35,7 @@ export default function Home() {
   Stack.Screen({ options: { headerShown: false } });
 
   const loadProducts = async () => {
-    const data = await listProducts();
+    const data = await listProductsLowLogic(false);
     setProducts(data);
   };
 
@@ -48,6 +49,12 @@ export default function Home() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Vencimientos</Text>
+        <Pressable
+          style={styles.archivedBtn}
+          onPress={() => router.push("/archived")}
+        >
+          <Text style={styles.archivedText}>Vencidos</Text>
+        </Pressable>
         <Pressable style={styles.addBtn} onPress={() => router.push("/add")}>
           <Text style={styles.addText}>＋</Text>
         </Pressable>
@@ -93,86 +100,6 @@ export default function Home() {
         )}
       />
     </View>
-  );
-}
-
-function ProductRow({
-  product,
-  onEdit,
-  onDelete,
-  onChange,
-}: {
-  product: Product;
-  onEdit: () => void;
-  onDelete: () => void;
-  onChange: () => void;
-}) {
-  const notifyDate = parseLocalDateTime(product.notify_at);
-
-  // 👇 convierte Date -> string, y cualquier otro valor -> string
-  const safeText = (v: any) =>
-    v instanceof Date ? v.toLocaleDateString("es-AR") : String(v);
-
-  const expiryLabel = parseLocalDate(product.expiry_date).toLocaleDateString(
-    "es-AR",
-  );
-  const avisoLabel = safeText(humanDateLabel(product.notify_at));
-
-  return (
-    <Pressable
-      onPress={onEdit}
-      style={[
-        styles.row,
-        { backgroundColor: urgencyColorByExpiry(product.expiry_date) },
-      ]}
-    >
-      <View style={{ flex: 1 }}>
-        <Text style={styles.name}>{product.name}</Text>
-
-        <Text style={styles.meta}>Vence: {expiryLabel}</Text>
-
-        <Text style={styles.submeta}>
-          Aviso: {avisoLabel} a las{" "}
-          {notifyDate.toLocaleTimeString("es-AR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Text>
-      </View>
-
-      <View style={styles.right}>
-        <Text style={styles.qty}>{product.quantity}</Text>
-
-        <View style={styles.qtyBtns}>
-          <Pressable
-            style={styles.qtyBtn}
-            onPress={async () => {
-              await updateProductQuantity(product.id, -1);
-              onChange();
-            }}
-          >
-            <Text style={styles.qtyText}>−</Text>
-          </Pressable>
-
-          <Pressable
-            style={styles.qtyBtn}
-            onPress={async () => {
-              await updateProductQuantity(product.id, +1);
-              onChange();
-            }}
-          >
-            <Text style={styles.qtyText}>＋</Text>
-          </Pressable>
-
-          <Pressable
-            style={[styles.qtyBtn, { backgroundColor: "#991b1b" }]}
-            onPress={onDelete}
-          >
-            <Text style={styles.qtyText}>🗑️</Text>
-          </Pressable>
-        </View>
-      </View>
-    </Pressable>
   );
 }
 
@@ -248,5 +175,19 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "900",
+  },
+  archivedBtn: {
+    paddingHorizontal: 14,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#991b1b",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
+  },
+  archivedText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "800",
   },
 });

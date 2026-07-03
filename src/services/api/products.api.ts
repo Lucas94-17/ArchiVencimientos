@@ -1,25 +1,6 @@
+import { ProductDto, Product } from "../../types/product";
 import { getOrCreateDeviceId } from "../device/device-id";
-
 const API = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000";
-
-// lo que viene del backend
-export type ProductDto = {
-  id: number;
-  name: string;
-  quantity: number;
-  expiry_date: string;
-  notify_at: string;
-  notificationId: string | null;
-};
-
-// lo que usa la UI
-export type Product = {
-  id: number;
-  name: string;
-  quantity: number;
-  expiry_date: string;
-  notify_at: string;
-};
 
 // CRUD
 export async function listProducts(): Promise<Product[]> {
@@ -107,4 +88,37 @@ export async function updateProduct(
 
   await throwIfNotOk(res, "Error updating product");
   return await jsonOrNull(res); // ✅ no rompe si viene vacío
+}
+
+export async function listProductsLowLogic(
+  includeDeleted: boolean,
+): Promise<Product[]> {
+  const deviceId = await getOrCreateDeviceId();
+
+  const url = `${API}/products/detail/low-logic?deviceId=${encodeURIComponent(deviceId)}&includeDeleted=${includeDeleted}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Error fetching low-logic products");
+
+  const data = await res.json();
+  return data.map((p: any) => ({
+    id: p.id,
+    name: p.name,
+    quantity: p.quantity,
+    expiry_date: String(p.expiry_date).slice(0, 10),
+    notify_at: String(p.notify_at),
+    is_deleted: p.is_deleted,
+  }));
+}
+
+export async function softDeleteProduct(productId: number) {
+  const deviceId = await getOrCreateDeviceId();
+
+  const res = await fetch(`${API}/products/${productId}/soft-delete`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ deviceId }),
+  });
+
+  await throwIfNotOk(res, "Error al dar de baja producto");
+  return await jsonOrNull(res);
 }
